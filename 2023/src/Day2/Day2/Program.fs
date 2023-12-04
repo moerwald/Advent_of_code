@@ -19,14 +19,12 @@ module Types =
 
 module Common =
 
+    open Types
+
     let splitAndTrimAllEntries  (splitCharacter: char) (line : string)=
         line.Split(splitCharacter)
         |> Array.map (fun x -> x.Trim())
 
-module Part1 =
-
-    open Types
-    open Common
 
     let parseReveal (line :string) =
         let colorToCount = line |> splitAndTrimAllEntries ','
@@ -82,13 +80,16 @@ module Part1 =
     let parseGames (line : string list) =
         line |> List.map  parseGame
 
+            
+module Part1 =
+
+    open Types
+
     let getValidGames (valid : CubesPerColor list) (games : Game list)  =
         let getValidBaseOnColor c=
             (valid 
             |> List.filter (fun x -> x.Color = c) 
             |> List.head).Count
-            
-
         games
         |> List.filter (fun x -> 
             x.CubeSets
@@ -98,3 +99,21 @@ module Part1 =
             )
 
 
+module Part2 =
+    open Types
+
+    let getMinNumberOfCubes (game : Game) =
+        game.CubeSets
+        |> List.collect (fun x -> x)
+        |> List.groupBy (fun x -> x.Color)
+        |> List.map (fun (c, counts) -> 
+            {
+                Color = c;
+                Count = counts |> List.map (fun x -> x.Count) |> List.max
+            })
+
+    let calcPowerOfAllGames (games : Game list) =
+            games
+            |> List.map getMinNumberOfCubes
+            |> List.map (fun x -> x |> List.fold (fun acc el -> acc * el.Count) 1)
+            |> List.sum
