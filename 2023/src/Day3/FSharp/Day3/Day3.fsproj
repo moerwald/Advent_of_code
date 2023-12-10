@@ -6,7 +6,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="input_part1.txt" />
     <Compile Include="Program.fs" />
   </ItemGroup>
+
+  <ItemGroup />
 
 </Project>
