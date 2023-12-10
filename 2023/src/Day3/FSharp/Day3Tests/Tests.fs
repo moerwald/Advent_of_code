@@ -57,7 +57,7 @@ let ``bundle line`` () =
         ([(5, 0); (6, 0); (7, 0)], Number 114);
         ([(8, 0)], Empty);
         ([(9, 0)], Empty)]
-    
-    
 
-    
+[<Fact>]
+let ``solve example`` () =
+    solvePart1 getParsed |> should equal 4361

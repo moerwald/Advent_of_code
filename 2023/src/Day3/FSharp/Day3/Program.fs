@@ -45,21 +45,21 @@ let rec bundle (line: (Coordinates * Character ) list) =
     | (co, Character.Empty)::t -> ([co], Bundle.Empty)::bundle(line |> List.skip 1)
     | (co, Character.Symbol s)::t -> ([co], Bundle.Symbol (s|> string))::bundle(line |> List.skip 1)
 
-let parsed = 
+let parseInput () = 
     System.IO.File.ReadAllLines $"{__SOURCE_DIRECTORY__}\\input_part1.txt"
     |> List.ofArray
     |> addCoordinatesToCharacters 
     |> List.map bundle
 
-let getSymbolCoordinates () = 
-    parsed
+let getSymbolCoordinates bundle = 
+    bundle
     |> List.collect id
     |> List.filter(fun (_ , b) -> match b with | Bundle.Symbol _ -> true | _ -> false)
     |> List.map fst
     |> List.collect id
 
-let getNumbers () = 
-    parsed
+let getNumbers bundle = 
+    bundle
     |> List.collect id
     |> List.filter (fun (_, b) -> match b with | Bundle.Number _ -> true | _ -> false)
 
@@ -77,26 +77,24 @@ let isNumberAdjacentToSymbol symbols (x,y) =
     |> Set.isEmpty
     |> not
 
-let getValidNumbers () = 
-    getNumbers ()
+let getValidNumbers bundle = 
+    getNumbers bundle
     |> List.filter 
         (fun (col, nr) -> 
                       col
                       |> List.filter 
                         (fun (x,y) -> 
-                            isNumberAdjacentToSymbol (getSymbolCoordinates ()) (x,y))
+                            isNumberAdjacentToSymbol (getSymbolCoordinates bundle) (x,y))
                       |> List.isEmpty
                       |> not
                  )
 
-
-getSymbols()
-
-let result = 
-    getValidNumbers ()
+let solvePart1 getInput = 
+    getInput ()
+    |> getValidNumbers 
     |> List.map snd 
     |> List.sumBy (fun n -> match n with | Bundle.Number n -> n | _ -> 0 )
 
-result |> printfn "Result %i"
+solvePart1 parseInput |> printfn "Result %i"
 
 
